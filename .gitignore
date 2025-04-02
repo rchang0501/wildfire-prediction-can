@@ -2,3 +2,5 @@
 __pycache__
 models/*
 data/*
+!data/wildfire_weather_merged.csv
+!data/wildfire_weather_interpolated_merged_cleaned.csv
