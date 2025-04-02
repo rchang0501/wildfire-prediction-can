@@ -1,0 +1,57 @@
+XGBOOST WILDFIRE CLASSIFICATION MODEL
+Trained on: 2025-03-29 15:51:07
+
+CLASSIFICATION THRESHOLD: 1.0 hectares
+
+Class 0: Fire size < 1.0 hectares
+Class 1: Fire size >= 1.0 hectares
+
+BEST HYPERPARAMETERS:
+colsample_bytree: 0.8
+learning_rate: 0.05
+max_depth: 5
+min_child_weight: 1
+n_estimators: 100
+subsample: 0.8
+
+SELECTED FEATURES:
+dew_point
+tasmin
+air_temp
+pcpn_amt_pst24hrs
+relative_humidity
+air_temperature_yesterday_low
+SnowDepth
+SolarRadiation
+AirTemp
+WSPD_SCLR
+total_precipitation
+air_temperature
+MIN_TEMP
+air_temp_1
+DewPtC
+RH
+TEMP_MEAN
+snwfl_amt_pst1hr
+DEW_POINT
+Snow_WE
+air_temperature_yesterday_high
+MAX_TEMP
+Precipitation
+tasmax
+temperature
+snw_dpth_wtr_equiv
+HUMIDITY
+Pressurembar
+MEASURED_WIND_DIRECTION1
+wind_speed
+cum_pcpn_amt
+Latitude
+Wetness
+Rainmm
+RelativeHumidity
+precipitation
+
+CLASS WEIGHTS:
+Class 0: 1.0
+Class 1: 4.756972111553785

@@ -1,0 +1,30 @@
+XGBOOST WILDFIRE PREDICTION MODEL
+Trained on: 2025-03-29 14:46:54
+
+BEST HYPERPARAMETERS:
+colsample_bytree: 1.0
+learning_rate: 0.01
+max_depth: 5
+min_child_weight: 1
+n_estimators: 100
+subsample: 1.0
+
+SELECTED FEATURES:
+snw_dpth_wtr_equiv
+TEMP_MEAN
+wind_gust_speed
+max_air_temp_snc_last_reset
+SnowDepth
+DayOfYear
+MEASURED_WIND_DIRECTION1
+rel_hum
+temperature
+WSPD_SCLR
+AirTemperature
+tasmax
+air_temperature_yesterday_low
+Elevation (m)
+MIN_TEMP
+
+TARGET TRANSFORMATION: log1p
+Remember to apply inverse transformation to predictions!

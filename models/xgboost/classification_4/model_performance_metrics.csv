@@ -1,0 +1,2 @@
+threshold,test_accuracy,test_precision,test_recall,test_f1,test_auc,test_specificity,true_negatives,false_positives,false_negatives,true_positives
+0.1,0.657439446366782,0.5,0.32323232323232326,0.39263803680981596,0.6323232323232323,0.8315789473684211,158,32,67,32

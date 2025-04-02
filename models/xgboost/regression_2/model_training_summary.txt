@@ -1,0 +1,28 @@
+WILDFIRE PREDICTION MODEL TRAINING SUMMARY
+==================================================
+
+1. Dataset Information:
+   - Total samples: 1445
+   - Initial features: 84
+   - Selected features: 67
+
+2. Model Performance:
+   - Test RMSE: 1.3333
+   - Test R²: 0.0018
+   - Test RMSE (original scale): 352.2631
+   - Test R² (original scale): -0.0109
+
+3. Top 5 Most Important Features:
+   1. TEMP_MEAN: 0.0561
+   2. max_air_temp_snc_last_reset: 0.0539
+   3. snw_dpth_wtr_equiv: 0.0451
+   4. wind_gust_speed: 0.0430
+   5. WindSpeed: 0.0423
+
+4. Model Configuration:
+   - colsample_bytree: 0.8
+   - learning_rate: 0.01
+   - max_depth: 7
+   - min_child_weight: 1
+   - n_estimators: 100
+   - subsample: 0.8

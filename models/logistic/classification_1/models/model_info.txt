@@ -1,0 +1,111 @@
+LOGISTIC REGRESSION WILDFIRE CLASSIFICATION MODEL
+Trained on: 2025-04-01 16:03:15
+
+CLASSIFICATION THRESHOLD: 0.01 hectares
+
+Class 0: Fire size < 0.01 hectares
+Class 1: Fire size >= 0.01 hectares
+
+BEST HYPERPARAMETERS:
+C: 0.1
+class_weight: None
+penalty: l2
+solver: liblinear
+
+SELECTED FEATURES:
+Longitude
+Latitude
+ATMOSPHERIC_PRESSURE
+AirTemp
+AirTemperature
+BAR_PRESS
+CURRENT_AIR_TEMPERATURE1
+DEW_POINT
+DewPtC
+Elevation (m)
+GustSpeedms
+HEIGHT_OF_SNOW
+HUMIDITY
+MAX_TEMP
+MEASURED_WIND_DIRECTION1
+MEASURED_WIND_SPEED1
+MIN_TEMP
+ONE_DAY_PRECIPITATION
+ONE_DAY_RAIN
+PRECIP_TOTAL
+Precipitation
+Pressurembar
+RELATIVE_HUMIDITY1
+RH
+Rain
+Rainmm
+RelativeHumidity
+SNOW_ON_THE_GROUND
+SWE
+SnowDepth
+SnowWaterEquivalent
+Snow_WE
+SolarRadiation
+SolarRadiationWm
+TEMP_MEAN
+TempC
+WDIR_VECT
+WIND_DIRECTION_STD_DEVIATION1
+WSPD_SCLR
+Wetness
+WindDirection
+WindSpeed
+WindSpeedms
+air_temp
+air_temp_1
+air_temp_2
+air_temperature
+air_temperature_yesterday_high
+air_temperature_yesterday_low
+avg_air_temp_pst1hr
+avg_rel_hum_pst1hr
+avg_wnd_dir_10m_pst10mts
+avg_wnd_spd_10m_pst10mts
+cum_pcpn_amt
+dew_point
+dwpt_temp
+max_air_temp_snc_last_reset
+max_wnd_spd_10m_pst1hr
+mean_sea_level
+min_air_temp_snc_last_reset
+mslp
+pcp
+pcpn_amt_pst1hr
+pcpn_amt_pst24hrs
+precipitation
+rel_hum
+relative_humidity
+rnfl_amt_pst1hr
+rnfl_amt_pst24hrs
+snw_dpth
+snw_dpth_wtr_equiv
+snwfl_amt_pst1hr
+stn_pres
+tasmax
+tasmin
+temperature
+tendency_amount
+total_precipitation
+wind_direction
+wind_gust_speed
+wind_speed
+Year
+Month
+DayOfYear
+
+TOP 10 COEFFICIENTS:
+1. SolarRadiation: 0.5302
+2. TEMP_MEAN: 0.4374
+3. snw_dpth: -0.4010
+4. DewPtC: -0.3617
+5. Year: 0.3361
+6. snwfl_amt_pst1hr: -0.3172
+7. air_temperature_yesterday_high: -0.3150
+8. avg_rel_hum_pst1hr: 0.2814
+9. air_temp: 0.2674
+10. relative_humidity: -0.2197

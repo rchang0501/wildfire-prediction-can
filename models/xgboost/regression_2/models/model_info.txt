@@ -1,0 +1,82 @@
+XGBOOST WILDFIRE PREDICTION MODEL
+Trained on: 2025-03-29 14:52:30
+
+BEST HYPERPARAMETERS:
+colsample_bytree: 0.8
+learning_rate: 0.01
+max_depth: 7
+min_child_weight: 1
+n_estimators: 100
+subsample: 0.8
+
+SELECTED FEATURES:
+TEMP_MEAN
+max_air_temp_snc_last_reset
+snw_dpth_wtr_equiv
+wind_gust_speed
+WindSpeed
+GustSpeedms
+rel_hum
+MEASURED_WIND_DIRECTION1
+DayOfYear
+air_temp
+mslp
+DEW_POINT
+Elevation (m)
+ATMOSPHERIC_PRESSURE
+DewPtC
+avg_rel_hum_pst1hr
+HUMIDITY
+tasmin
+MIN_TEMP
+WSPD_SCLR
+PRECIP_TOTAL
+ONE_DAY_RAIN
+temperature
+air_temperature_yesterday_high
+RelativeHumidity
+Wetness
+Month
+ONE_DAY_PRECIPITATION
+air_temperature_yesterday_low
+avg_wnd_spd_10m_pst10mts
+pcpn_amt_pst24hrs
+MAX_TEMP
+snw_dpth
+Pressurembar
+SolarRadiationWm
+RH
+AirTemperature
+air_temperature
+pcp
+mean_sea_level
+Rainmm
+max_wnd_spd_10m_pst1hr
+avg_wnd_dir_10m_pst10mts
+WindDirection
+RELATIVE_HUMIDITY1
+air_temp_1
+dew_point
+Latitude
+HEIGHT_OF_SNOW
+Snow_WE
+WIND_DIRECTION_STD_DEVIATION1
+min_air_temp_snc_last_reset
+WDIR_VECT
+CURRENT_AIR_TEMPERATURE1
+tendency_amount
+relative_humidity
+precipitation
+wind_direction
+MEASURED_WIND_SPEED1
+SnowDepth
+pcpn_amt_pst1hr
+cum_pcpn_amt
+WindSpeedms
+avg_air_temp_pst1hr
+stn_pres
+rnfl_amt_pst24hrs
+tasmax
+
+TARGET TRANSFORMATION: log1p
+Remember to apply inverse transformation to predictions!

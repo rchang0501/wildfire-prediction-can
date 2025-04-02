@@ -1,0 +1,11 @@
+Classification Report (Threshold: 1.0 hectares)
+==================================================
+
+              precision    recall  f1-score   support
+
+      <1.0ha       0.87      0.90      0.88       239
+     >=1.0ha       0.40      0.34      0.37        50
+
+    accuracy                           0.80       289
+   macro avg       0.64      0.62      0.63       289
+weighted avg       0.79      0.80      0.79       289

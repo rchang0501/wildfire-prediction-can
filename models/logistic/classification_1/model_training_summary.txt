@@ -1,0 +1,31 @@
+WILDFIRE CLASSIFICATION LOGISTIC REGRESSION MODEL TRAINING SUMMARY
+==================================================
+
+Classification Task: Predict if fire size is >= 0.01 hectares
+
+1. Dataset Information:
+   - Total samples: 1445
+   - Class 0 (< 0.01 ha): 599 samples (41.45%)
+   - Class 1 (>= 0.01 ha): 846 samples (58.55%)
+   - Initial features: 84
+   - Selected features: 84
+
+2. Model Performance:
+   - Test Accuracy: 0.6574
+   - Test Precision: 0.7244
+   - Test Recall: 0.6686
+   - Test F1 Score: 0.6954
+   - Test AUC: 0.7279
+
+3. Top 5 Most Influential Features (by coefficient magnitude):
+   1. SolarRadiation: 0.5302
+   2. TEMP_MEAN: 0.4374
+   3. snw_dpth: -0.4010
+   4. DewPtC: -0.3617
+   5. Year: 0.3361
+
+4. Model Configuration:
+   - C: 0.1
+   - class_weight: None
+   - penalty: l2
+   - solver: liblinear

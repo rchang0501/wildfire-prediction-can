@@ -1,0 +1,101 @@
+XGBOOST WILDFIRE CLASSIFICATION MODEL
+Trained on: 2025-03-29 15:54:05
+
+CLASSIFICATION THRESHOLD: 1.0 hectares
+
+Class 0: Fire size < 1.0 hectares
+Class 1: Fire size >= 1.0 hectares
+
+BEST HYPERPARAMETERS:
+colsample_bytree: 0.8
+learning_rate: 0.01
+max_depth: 5
+min_child_weight: 3
+n_estimators: 200
+subsample: 0.8
+
+SELECTED FEATURES:
+dew_point
+tasmin
+snwfl_amt_pst1hr
+max_air_temp_snc_last_reset
+air_temperature
+SnowDepth
+relative_humidity
+MIN_TEMP
+CURRENT_AIR_TEMPERATURE1
+air_temperature_yesterday_low
+SolarRadiation
+air_temperature_yesterday_high
+stn_pres
+total_precipitation
+air_temp_1
+RH
+DEW_POINT
+WSPD_SCLR
+MAX_TEMP
+pcpn_amt_pst24hrs
+cum_pcpn_amt
+WDIR_VECT
+snw_dpth_wtr_equiv
+DewPtC
+temperature
+AirTemp
+Wetness
+pcp
+pcpn_amt_pst1hr
+TEMP_MEAN
+GustSpeedms
+Snow_WE
+mslp
+Rainmm
+wind_speed
+HUMIDITY
+Latitude
+Pressurembar
+SWE
+snw_dpth
+MEASURED_WIND_DIRECTION1
+Precipitation
+tasmax
+MEASURED_WIND_SPEED1
+WIND_DIRECTION_STD_DEVIATION1
+rel_hum
+air_temp
+dwpt_temp
+avg_wnd_dir_10m_pst10mts
+RelativeHumidity
+WindSpeedms
+wind_gust_speed
+ONE_DAY_PRECIPITATION
+SolarRadiationWm
+precipitation
+ATMOSPHERIC_PRESSURE
+WindDirection
+BAR_PRESS
+TempC
+AirTemperature
+WindSpeed
+wind_direction
+mean_sea_level
+Year
+RELATIVE_HUMIDITY1
+SNOW_ON_THE_GROUND
+DayOfYear
+HEIGHT_OF_SNOW
+avg_rel_hum_pst1hr
+Elevation (m)
+tendency_amount
+Month
+ONE_DAY_RAIN
+rnfl_amt_pst1hr
+avg_air_temp_pst1hr
+rnfl_amt_pst24hrs
+Longitude
+PRECIP_TOTAL
+avg_wnd_spd_10m_pst10mts
+air_temp_2
+
+CLASS WEIGHTS:
+Class 0: 1.0
+Class 1: 4.756972111553785

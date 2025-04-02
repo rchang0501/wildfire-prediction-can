@@ -1,0 +1,37 @@
+WILDFIRE CLASSIFICATION MODEL TRAINING SUMMARY
+==================================================
+
+Classification Task: Predict if fire size is >= 1.0 hectares
+
+1. Dataset Information:
+   - Total samples: 1445
+   - Class 0 (< 1.0 ha): 1194 samples (82.63%)
+   - Class 1 (>= 1.0 ha): 251 samples (17.37%)
+   - Initial features: 84
+   - Selected features: 80
+
+2. Model Performance:
+   - Test Accuracy: 0.7924
+   - Test Precision: 0.3913
+   - Test Recall: 0.3600
+   - Test F1 Score: 0.3750
+   - Test AUC: 0.7383
+
+3. Top 5 Most Important Features:
+   1. dew_point: 0.0447
+   2. tasmin: 0.0396
+   3. snwfl_amt_pst1hr: 0.0224
+   4. max_air_temp_snc_last_reset: 0.0218
+   5. air_temperature: 0.0211
+
+4. Model Configuration:
+   - colsample_bytree: 0.8
+   - learning_rate: 0.01
+   - max_depth: 5
+   - min_child_weight: 3
+   - n_estimators: 200
+   - subsample: 0.8
+
+5. Class Weights Used:
+   - Class 0: 1.0
+   - Class 1: 4.756972111553785
