@@ -1,0 +1,3 @@
+KEY NUMERIC COLUMNS FOR ML:
+Elevation (m)
+FIRE_SIZE_HA

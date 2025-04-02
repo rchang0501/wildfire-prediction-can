@@ -1,5 +1,4 @@
 .DS_Store
 __pycache__
-data/*
-!data/wildfire_weather_merged.csv
-!data/wildfire_weather_interpolated_merged_cleaned.csv
+data/weather/*
+data/wildfire/*
