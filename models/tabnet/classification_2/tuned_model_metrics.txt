@@ -1,0 +1,22 @@
+TUNED TABNET MODEL METRICS
+==============================
+
+Best Parameters:
+  n_d: 16
+  n_a: 8
+  n_steps: 3
+  gamma: 1.0
+  lambda_sparse: 0.001
+  batch_size: 512
+
+Training Accuracy: 0.6817
+Validation Accuracy: 0.6540
+
+Training F1 Score: 0.7500
+Validation F1 Score: 0.7354
+
+Training AUC: 0.7620
+Validation AUC: 0.7280
+
+Validation Precision: 0.6651
+Validation Recall: 0.8225

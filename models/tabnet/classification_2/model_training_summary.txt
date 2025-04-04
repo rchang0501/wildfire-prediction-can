@@ -1,0 +1,32 @@
+WILDFIRE CLASSIFICATION TABNET MODEL TRAINING SUMMARY
+==================================================
+
+Classification Task: Predict if fire size is >= 0.01 hectares
+
+1. Dataset Information:
+   - Total samples: 1445
+   - Class 0 (< 0.01 ha): 599 samples (41.45%)
+   - Class 1 (>= 0.01 ha): 846 samples (58.55%)
+   - Initial features: 84
+
+2. Model Performance:
+   - Test Accuracy: 0.6678
+   - Test Precision: 0.7589
+   - Test Recall: 0.6331
+   - Test F1 Score: 0.6903
+   - Test AUC: 0.7455
+
+3. Top 5 Most Important Features:
+   1. snwfl_amt_pst1hr: 0.0614
+   2. snw_dpth: 0.0484
+   3. MAX_TEMP: 0.0415
+   4. temperature: 0.0413
+   5. avg_wnd_dir_10m_pst10mts: 0.0407
+
+4. Model Configuration:
+   - n_d: 16
+   - n_a: 8
+   - n_steps: 3
+   - gamma: 1.0
+   - lambda_sparse: 0.001
+   - batch_size: 256

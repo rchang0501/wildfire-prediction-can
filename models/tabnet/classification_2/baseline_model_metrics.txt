@@ -1,0 +1,22 @@
+BASELINE TABNET MODEL METRICS
+==============================
+
+Default Parameters:
+  n_d: 16
+  n_a: 16
+  n_steps: 3
+  gamma: 1.5
+  lambda_sparse: 1e-3
+  batch_size: 256
+  max_epochs: 50
+  patience: 15
+  class_weight: None
+
+Training Accuracy: 0.7197
+Validation Accuracy: 0.6782
+
+Training F1 Score: 0.7373
+Validation F1 Score: 0.6931
+
+Training AUC: 0.8070
+Validation AUC: 0.7480

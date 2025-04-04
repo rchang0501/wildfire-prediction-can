@@ -244,6 +244,43 @@ def train_tabnet_classifier(input_file, output_dir, target_column='FIRE_SIZE_HA'
     print(f"Baseline model validation F1: {baseline_val_f1:.4f}")
     print(f"Baseline model training AUC: {baseline_train_auc:.4f}")
     print(f"Baseline model validation AUC: {baseline_val_auc:.4f}")
+
+    # Write baseline metrics to file
+    baseline_metrics = {
+        'baseline_train_accuracy': baseline_train_accuracy,
+        'baseline_val_accuracy': baseline_val_accuracy,
+        'baseline_train_f1': baseline_train_f1,
+        'baseline_val_f1': baseline_val_f1,
+        'baseline_train_auc': baseline_train_auc,
+        'baseline_val_auc': baseline_val_auc
+    }
+
+    # Create metrics dataframe and save to CSV
+    baseline_metrics_df = pd.DataFrame([baseline_metrics])
+    baseline_metrics_df.to_csv(os.path.join(output_dir, 'baseline_model_metrics.csv'), index=False)
+    print(f"Baseline metrics saved to {os.path.join(output_dir, 'baseline_model_metrics.csv')}")
+
+    # Also write a more readable text version
+    with open(os.path.join(output_dir, 'baseline_model_metrics.txt'), 'w') as f:
+        f.write("BASELINE TABNET MODEL METRICS\n")
+        f.write("=" * 30 + "\n\n")
+        f.write("Default Parameters:\n")
+        f.write(f"  n_d: 16\n")
+        f.write(f"  n_a: 16\n")
+        f.write(f"  n_steps: 3\n")
+        f.write(f"  gamma: 1.5\n")
+        f.write(f"  lambda_sparse: 1e-3\n")
+        f.write(f"  batch_size: 256\n")
+        f.write(f"  max_epochs: 50\n")
+        f.write(f"  patience: 15\n")
+        f.write(f"  class_weight: {class_weights}\n\n")
+        f.write(f"Training Accuracy: {baseline_train_accuracy:.4f}\n")
+        f.write(f"Validation Accuracy: {baseline_val_accuracy:.4f}\n\n")
+        f.write(f"Training F1 Score: {baseline_train_f1:.4f}\n")
+        f.write(f"Validation F1 Score: {baseline_val_f1:.4f}\n\n")
+        f.write(f"Training AUC: {baseline_train_auc:.4f}\n")
+        f.write(f"Validation AUC: {baseline_val_auc:.4f}\n")
+    print(f"Baseline metrics text summary saved to {os.path.join(output_dir, 'baseline_model_metrics.txt')}")
     
     # Get the feature importance scores
     feature_importance = baseline_model.feature_importances_
@@ -376,16 +413,106 @@ def train_tabnet_classifier(input_file, output_dir, target_column='FIRE_SIZE_HA'
                 param_dict['batch_size'] = batch_size  # Add batch_size back for final training
                 best_params = param_dict
     
+    # After grid search in section 6, add this code to evaluate the tuned model
+    # Make a copy of best_params including batch_size for display
     print("\nBest parameters found:")
     for param, value in best_params.items():
         print(f"  {param}: {value}")
+
+    display_params = best_params.copy()
+    display_params['batch_size'] = batch_size
+
+    batch_size = best_params.pop('batch_size') if 'batch_size' in best_params else 256
+
+    # Initialize a model with the best parameters to evaluate on the validation set
+    tuned_model = TabNetClassifier(
+        **best_params,  # This should not include batch_size
+        optimizer_fn=torch.optim.Adam,
+        optimizer_params=dict(lr=2e-2),
+        scheduler_params=dict(
+            mode="min", patience=5, min_lr=1e-5, factor=0.5
+        ),
+        scheduler_fn=torch.optim.lr_scheduler.ReduceLROnPlateau,
+        mask_type='entmax',
+        verbose=0,
+        seed=RANDOM_SEED
+    )
+
+    # Set class weights if needed
+    tuned_model.class_weight = class_weights
+
+    # Fit the model on the training data
+    tuned_model.fit(
+        X_train=X_train_scaled, y_train=y_train,
+        eval_set=[(X_val_scaled, y_val)],
+        eval_metric=['accuracy', 'logloss'],
+        max_epochs=50,
+        patience=15,
+        batch_size=batch_size  # Pass batch_size here
+    )
+
+    # Get predictions
+    tuned_train_pred = tuned_model.predict(X_train_scaled)
+    tuned_val_pred = tuned_model.predict(X_val_scaled)
+    tuned_train_pred_proba = tuned_model.predict_proba(X_train_scaled)[:, 1]
+    tuned_val_pred_proba = tuned_model.predict_proba(X_val_scaled)[:, 1]
+
+    # Calculate metrics
+    tuned_train_accuracy = accuracy_score(y_train, tuned_train_pred)
+    tuned_val_accuracy = accuracy_score(y_val, tuned_val_pred)
+    tuned_train_f1 = f1_score(y_train, tuned_train_pred)
+    tuned_val_f1 = f1_score(y_val, tuned_val_pred)
+    tuned_train_auc = roc_auc_score(y_train, tuned_train_pred_proba)
+    tuned_val_auc = roc_auc_score(y_val, tuned_val_pred_proba)
+    tuned_val_precision = precision_score(y_val, tuned_val_pred)
+    tuned_val_recall = recall_score(y_val, tuned_val_pred)
+
+    # Print metrics
+    print(f"\nTuned model metrics:")
+    print(f"Training Accuracy: {tuned_train_accuracy:.4f}  |  Validation Accuracy: {tuned_val_accuracy:.4f}")
+    print(f"Training F1 Score: {tuned_train_f1:.4f}  |  Validation F1 Score: {tuned_val_f1:.4f}")
+    print(f"Training AUC: {tuned_train_auc:.4f}  |  Validation AUC: {tuned_val_auc:.4f}")
+    print(f"Validation Precision: {tuned_val_precision:.4f}")
+    print(f"Validation Recall: {tuned_val_recall:.4f}")
+
+    # Write tuned model metrics to file
+    tuned_metrics = {
+        'tuned_train_accuracy': tuned_train_accuracy,
+        'tuned_val_accuracy': tuned_val_accuracy,
+        'tuned_train_f1': tuned_train_f1,
+        'tuned_val_f1': tuned_val_f1,
+        'tuned_train_auc': tuned_train_auc,
+        'tuned_val_auc': tuned_val_auc,
+        'tuned_val_precision': tuned_val_precision,
+        'tuned_val_recall': tuned_val_recall
+    }
+
+    # Create metrics dataframe and save to CSV
+    tuned_metrics_df = pd.DataFrame([tuned_metrics])
+    tuned_metrics_df.to_csv(os.path.join(output_dir, 'tuned_model_metrics.csv'), index=False)
+    print(f"Tuned model metrics saved to {os.path.join(output_dir, 'tuned_model_metrics.csv')}")
+
+    # Also write a more readable text version
+    with open(os.path.join(output_dir, 'tuned_model_metrics.txt'), 'w') as f:
+        f.write("TUNED TABNET MODEL METRICS\n")
+        f.write("=" * 30 + "\n\n")
+        f.write(f"Best Parameters:\n")
+        for param, value in display_params.items():
+            f.write(f"  {param}: {value}\n")
+        f.write("\n")
+        f.write(f"Training Accuracy: {tuned_train_accuracy:.4f}\n")
+        f.write(f"Validation Accuracy: {tuned_val_accuracy:.4f}\n\n")
+        f.write(f"Training F1 Score: {tuned_train_f1:.4f}\n")
+        f.write(f"Validation F1 Score: {tuned_val_f1:.4f}\n\n")
+        f.write(f"Training AUC: {tuned_train_auc:.4f}\n")
+        f.write(f"Validation AUC: {tuned_val_auc:.4f}\n\n")
+        f.write(f"Validation Precision: {tuned_val_precision:.4f}\n")
+        f.write(f"Validation Recall: {tuned_val_recall:.4f}\n")
+    print(f"Tuned model metrics text summary saved to {os.path.join(output_dir, 'tuned_model_metrics.txt')}")
     
     # 7. TRAIN FINAL MODEL
     print("\n7. TRAINING FINAL MODEL WITH TUNED HYPERPARAMETERS")
     print("-"*50)
-    
-    # Extract batch size for training
-    batch_size = best_params.pop('batch_size')
     
     # Create final model with best parameters
     final_model = TabNetClassifier(
@@ -659,7 +786,7 @@ if __name__ == "__main__":
                 break
     
     # Output directory for model artifacts
-    output_dir = "./models/tabnet/classification_1"
+    output_dir = "./models/tabnet/classification_2"
     
     # Define classification threshold in hectares (same as XGBoost and SVM for comparison)
     threshold = 0.01
