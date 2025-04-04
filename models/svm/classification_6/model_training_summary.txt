@@ -1,0 +1,30 @@
+WILDFIRE CLASSIFICATION SVM MODEL TRAINING SUMMARY
+==================================================
+
+Classification Task: Predict if fire size is >= 0.01 hectares
+
+1. Dataset Information:
+   - Total samples: 1445
+   - Class 0 (< 0.01 ha): 599 samples (41.45%)
+   - Class 1 (>= 0.01 ha): 846 samples (58.55%)
+   - Initial features: 84
+   - Selected features: 40
+
+2. Model Performance:
+   - Test Accuracy: 0.5882
+   - Test Precision: 0.5868
+   - Test Recall: 1.0000
+   - Test F1 Score: 0.7396
+   - Test AUC: 0.6928
+
+3. Top 5 Most Important Features (by permutation importance):
+   1. avg_wnd_spd_10m_pst10mts: 0.0035
+   2. PRECIP_TOTAL: 0.0035
+   3. RelativeHumidity: 0.0017
+   4. avg_wnd_dir_10m_pst10mts: 0.0014
+   5. avg_air_temp_pst1hr: 0.0014
+
+4. Model Configuration:
+   - C: 0.5
+   - gamma: 0.01
+   - kernel: poly

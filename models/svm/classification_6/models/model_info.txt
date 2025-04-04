@@ -1,0 +1,54 @@
+SVM WILDFIRE CLASSIFICATION MODEL
+Trained on: 2025-04-04 18:42:54
+
+CLASSIFICATION THRESHOLD: 0.01 hectares
+
+Class 0: Fire size < 0.01 hectares
+Class 1: Fire size >= 0.01 hectares
+
+BEST HYPERPARAMETERS:
+C: 0.5
+gamma: 0.01
+kernel: poly
+
+SELECTED FEATURES:
+Longitude
+Latitude
+AirTemperature
+BAR_PRESS
+HUMIDITY
+MAX_TEMP
+PRECIP_TOTAL
+RH
+Rain
+RelativeHumidity
+Snow_WE
+SolarRadiationWm
+TEMP_MEAN
+TempC
+WDIR_VECT
+WSPD_SCLR
+Wetness
+air_temp
+air_temp_2
+avg_air_temp_pst1hr
+avg_rel_hum_pst1hr
+avg_wnd_dir_10m_pst10mts
+avg_wnd_spd_10m_pst10mts
+cum_pcpn_amt
+max_air_temp_snc_last_reset
+min_air_temp_snc_last_reset
+mslp
+pcpn_amt_pst1hr
+rel_hum
+relative_humidity
+rnfl_amt_pst1hr
+rnfl_amt_pst24hrs
+snw_dpth
+snwfl_amt_pst1hr
+stn_pres
+tasmax
+tasmin
+Year
+Month
+DayOfYear

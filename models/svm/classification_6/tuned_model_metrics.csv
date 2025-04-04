@@ -1,0 +1,2 @@
+tuned_train_accuracy,tuned_val_accuracy,tuned_train_f1,tuned_val_f1,tuned_val_precision,tuned_val_recall,tuned_train_auc,tuned_val_auc
+0.5882352941176471,0.5847750865051903,0.7399854333576111,0.7379912663755459,0.5847750865051903,1.0,0.8106233413023929,0.8004437869822486

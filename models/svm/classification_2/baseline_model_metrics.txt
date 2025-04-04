@@ -1,0 +1,18 @@
+BASELINE SVM MODEL METRICS
+==============================
+
+Default Parameters:
+  kernel: rbf
+  C: 1.0
+  gamma: scale
+  probability: True
+  class_weight: None
+
+Training Accuracy: 0.7612
+Validation Accuracy: 0.7266
+
+Training F1 Score: 0.7911
+Validation F1 Score: 0.7642
+
+Training AUC: 0.8419
+Validation AUC: 0.8196

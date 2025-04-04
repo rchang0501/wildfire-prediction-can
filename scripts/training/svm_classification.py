@@ -6,7 +6,7 @@ import os
 import pickle
 from datetime import datetime
 
-from sklearn.model_selection import train_test_split, GridSearchCV, KFold, cross_val_score
+from sklearn.model_selection import train_test_split, GridSearchCV, KFold, cross_val_score, StratifiedKFold
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score
 from sklearn.metrics import confusion_matrix, classification_report, precision_recall_curve, roc_curve
@@ -247,7 +247,8 @@ def train_svm_classifier(input_file, output_dir, target_column='FIRE_SIZE_HA', t
     
     # Basic SVM classifier with default hyperparameters
     baseline_model = SVC(
-        kernel='rbf',
+        # kernel='rbf',
+        kernel='poly',
         C=1.0,
         gamma='scale',
         probability=True,
@@ -282,12 +283,49 @@ def train_svm_classifier(input_file, output_dir, target_column='FIRE_SIZE_HA', t
     print(f"Baseline model validation accuracy: {baseline_val_accuracy:.4f}")
     print(f"Baseline model training F1: {baseline_train_f1:.4f}")
     print(f"Baseline model validation F1: {baseline_val_f1:.4f}")
-    
+
     if proba_available:
         baseline_train_auc = roc_auc_score(y_train, y_train_pred_proba)
         baseline_val_auc = roc_auc_score(y_val, y_val_pred_proba)
         print(f"Baseline model training AUC: {baseline_train_auc:.4f}")
         print(f"Baseline model validation AUC: {baseline_val_auc:.4f}")
+
+    # Include AUC metrics if probability is available
+    baseline_metrics = {
+        'baseline_train_accuracy': baseline_train_accuracy,
+        'baseline_val_accuracy': baseline_val_accuracy,
+        'baseline_train_f1': baseline_train_f1,
+        'baseline_val_f1': baseline_val_f1
+    }
+
+    if proba_available:
+        baseline_metrics['baseline_train_auc'] = baseline_train_auc
+        baseline_metrics['baseline_val_auc'] = baseline_val_auc
+
+    # Create metrics dataframe and save to CSV
+    baseline_metrics_df = pd.DataFrame([baseline_metrics])
+    baseline_metrics_df.to_csv(os.path.join(output_dir, 'baseline_model_metrics.csv'), index=False)
+    print(f"Baseline metrics saved to {os.path.join(output_dir, 'baseline_model_metrics.csv')}")
+
+    # Also write a more readable text version
+    with open(os.path.join(output_dir, 'baseline_model_metrics.txt'), 'w') as f:
+        f.write("BASELINE SVM MODEL METRICS\n")
+        f.write("=" * 30 + "\n\n")
+        f.write("Default Parameters:\n")
+        f.write(f"  kernel: rbf\n")
+        f.write(f"  C: 1.0\n")
+        f.write(f"  gamma: scale\n")
+        f.write(f"  probability: True\n")
+        f.write(f"  class_weight: {class_weights}\n\n")
+        f.write(f"Training Accuracy: {baseline_train_accuracy:.4f}\n")
+        f.write(f"Validation Accuracy: {baseline_val_accuracy:.4f}\n\n")
+        f.write(f"Training F1 Score: {baseline_train_f1:.4f}\n")
+        f.write(f"Validation F1 Score: {baseline_val_f1:.4f}\n\n")
+        if proba_available:
+            f.write(f"Training AUC: {baseline_train_auc:.4f}\n")
+            f.write(f"Validation AUC: {baseline_val_auc:.4f}\n")
+    print(f"Baseline metrics text summary saved to {os.path.join(output_dir, 'baseline_model_metrics.txt')}")
+
     
     # 6. HYPERPARAMETER TUNING
     print("\n6. HYPERPARAMETER TUNING")
@@ -295,19 +333,20 @@ def train_svm_classifier(input_file, output_dir, target_column='FIRE_SIZE_HA', t
     
     # Define parameter grid
     param_grid = {
-        'C': [0.1, 1, 10, 100],
-        'gamma': ['scale', 'auto', 0.01, 0.1, 1],
-        'kernel': ['rbf', 'poly', 'sigmoid']
+        'C': [0.1, 0.5, 1, 5, 10, 50, 100],
+        'gamma': ['scale', 'auto', 0.001, 0.01, 0.1, 1],
+        # 'kernel': ['rbf', 'poly', 'sigmoid']
+        'kernel': ['poly']
     }
     
-    # Use reduced parameter grid if training dataset is small
-    if X_train_scaled.shape[0] < 500:
-        print("Small training dataset detected. Using reduced parameter grid.")
-        param_grid = {
-            'C': [0.1, 1, 10],
-            'gamma': ['scale', 0.1],
-            'kernel': ['rbf', 'linear']
-        }
+    # # Use reduced parameter grid if training dataset is small
+    # if X_train_scaled.shape[0] < 500:
+    #     print("Small training dataset detected. Using reduced parameter grid.")
+    #     param_grid = {
+    #         'C': [0.1, 1, 10],
+    #         'gamma': ['scale', 0.1],
+    #         'kernel': ['rbf', 'linear']
+    #     }
     
     # Create base model for tuning (with appropriate class weight if needed)
     svm_model = SVC(
@@ -317,17 +356,18 @@ def train_svm_classifier(input_file, output_dir, target_column='FIRE_SIZE_HA', t
     )
     
     # Create cross-validation strategy
-    cv = KFold(n_splits=5, shuffle=True, random_state=RANDOM_SEED)
+    cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=RANDOM_SEED)
     
     # Perform grid search with cross-validation
-    print("Starting hyperparameter search with 5-fold cross-validation...")
+    print("Starting hyperparameter search with 5-fold stratified cross-validation...")
     grid_search = GridSearchCV(
         estimator=svm_model,
         param_grid=param_grid,
         cv=cv,
-        scoring='f1',  # Focus on F1 score for imbalanced classification
+        scoring='f1',  # Keep focus on F1 score for imbalanced classification
         n_jobs=-1,
-        verbose=1
+        verbose=1,
+        return_train_score=True  # Add this to get training scores
     )
     
     # Fit the grid search
@@ -338,6 +378,79 @@ def train_svm_classifier(input_file, output_dir, target_column='FIRE_SIZE_HA', t
     print("Best parameters found:")
     for param, value in best_params.items():
         print(f"  {param}: {value}")
+    
+    best_model = grid_search.best_estimator_
+    tuned_train_pred = best_model.predict(X_train_scaled)
+    tuned_val_pred = best_model.predict(X_val_scaled)
+
+    # Get probability predictions if available
+    try:
+        tuned_train_pred_proba = best_model.predict_proba(X_train_scaled)[:, 1]
+        tuned_val_pred_proba = best_model.predict_proba(X_val_scaled)[:, 1]
+        tuned_proba_available = True
+    except:
+        print("Warning: Probability predictions not available for tuned model.")
+        tuned_proba_available = False
+
+    # Calculate metrics for tuned model
+    tuned_train_accuracy = accuracy_score(y_train, tuned_train_pred)
+    tuned_val_accuracy = accuracy_score(y_val, tuned_val_pred)
+    tuned_train_f1 = f1_score(y_train, tuned_train_pred)
+    tuned_val_f1 = f1_score(y_val, tuned_val_pred)
+    tuned_val_precision = precision_score(y_val, tuned_val_pred)
+    tuned_val_recall = recall_score(y_val, tuned_val_pred)
+
+    # Print metrics
+    print(f"\nTuned model metrics:")
+    print(f"Training Accuracy: {tuned_train_accuracy:.4f}  |  Validation Accuracy: {tuned_val_accuracy:.4f}")
+    print(f"Training F1 Score: {tuned_train_f1:.4f}  |  Validation F1 Score: {tuned_val_f1:.4f}")
+    print(f"Validation Precision: {tuned_val_precision:.4f}")
+    print(f"Validation Recall: {tuned_val_recall:.4f}")
+
+    # Add AUC if probability predictions are available
+    if tuned_proba_available:
+        tuned_train_auc = roc_auc_score(y_train, tuned_train_pred_proba)
+        tuned_val_auc = roc_auc_score(y_val, tuned_val_pred_proba)
+        print(f"Training AUC: {tuned_train_auc:.4f}  |  Validation AUC: {tuned_val_auc:.4f}")
+
+    # Write tuned model metrics to file
+    tuned_metrics = {
+        'tuned_train_accuracy': tuned_train_accuracy,
+        'tuned_val_accuracy': tuned_val_accuracy,
+        'tuned_train_f1': tuned_train_f1,
+        'tuned_val_f1': tuned_val_f1,
+        'tuned_val_precision': tuned_val_precision,
+        'tuned_val_recall': tuned_val_recall
+    }
+
+    # Add AUC metrics if available
+    if tuned_proba_available:
+        tuned_metrics['tuned_train_auc'] = tuned_train_auc
+        tuned_metrics['tuned_val_auc'] = tuned_val_auc
+
+    # Create metrics dataframe and save to CSV
+    tuned_metrics_df = pd.DataFrame([tuned_metrics])
+    tuned_metrics_df.to_csv(os.path.join(output_dir, 'tuned_model_metrics.csv'), index=False)
+    print(f"Tuned model metrics saved to {os.path.join(output_dir, 'tuned_model_metrics.csv')}")
+
+    # Also write a more readable text version
+    with open(os.path.join(output_dir, 'tuned_model_metrics.txt'), 'w') as f:
+        f.write("TUNED SVM MODEL METRICS\n")
+        f.write("=" * 30 + "\n\n")
+        f.write(f"Best Parameters:\n")
+        for param, value in best_params.items():
+            f.write(f"  {param}: {value}\n")
+        f.write("\n")
+        f.write(f"Training Accuracy: {tuned_train_accuracy:.4f}\n")
+        f.write(f"Validation Accuracy: {tuned_val_accuracy:.4f}\n\n")
+        f.write(f"Training F1 Score: {tuned_train_f1:.4f}\n")
+        f.write(f"Validation F1 Score: {tuned_val_f1:.4f}\n\n")
+        f.write(f"Validation Precision: {tuned_val_precision:.4f}\n")
+        f.write(f"Validation Recall: {tuned_val_recall:.4f}\n")
+        if tuned_proba_available:
+            f.write(f"\nTraining AUC: {tuned_train_auc:.4f}\n")
+            f.write(f"Validation AUC: {tuned_val_auc:.4f}\n")
+    print(f"Tuned model metrics text summary saved to {os.path.join(output_dir, 'tuned_model_metrics.txt')}")
     
     # 7. TRAIN FINAL MODEL
     print("\n7. TRAINING FINAL MODEL WITH TUNED HYPERPARAMETERS")
@@ -538,56 +651,56 @@ def train_svm_classifier(input_file, output_dir, target_column='FIRE_SIZE_HA', t
         print(f"  {i+1}. {row['Feature']}: {row['Importance']:.4f} ± {row['Std']:.4f}")
     
     # 11. VISUALIZATION OF DECISION BOUNDARY (IF POSSIBLE)
-    print("\n11. DECISION BOUNDARY VISUALIZATION")
-    print("-"*50)
+    # print("\n11. DECISION BOUNDARY VISUALIZATION")
+    # print("-"*50)
     
-    # Only attempt if dimensionality is not too high
-    if len(selected_features) > 2:
-        # Use PCA to reduce dimensions for visualization
-        print("Applying PCA for decision boundary visualization...")
+    # # Only attempt if dimensionality is not too high
+    # if len(selected_features) > 2:
+    #     # Use PCA to reduce dimensions for visualization
+    #     print("Applying PCA for decision boundary visualization...")
         
-        pca = PCA(n_components=2)
-        X_test_pca = pca.fit_transform(X_test_scaled)
+    #     pca = PCA(n_components=2)
+    #     X_test_pca = pca.fit_transform(X_test_scaled)
         
-        # Calculate explained variance
-        explained_var = pca.explained_variance_ratio_
-        print(f"Explained variance ratio for 2 PCA components: {explained_var[0]:.2f}, {explained_var[1]:.2f}")
-        print(f"Total explained variance: {sum(explained_var):.2f}")
+    #     # Calculate explained variance
+    #     explained_var = pca.explained_variance_ratio_
+    #     print(f"Explained variance ratio for 2 PCA components: {explained_var[0]:.2f}, {explained_var[1]:.2f}")
+    #     print(f"Total explained variance: {sum(explained_var):.2f}")
         
-        # Train a new SVM model on PCA components for visualization
-        svm_pca = SVC(
-            probability=True,
-            class_weight=class_weights,
-            random_state=RANDOM_SEED,
-            **best_params
-        )
-        svm_pca.fit(pca.fit_transform(X_train_val_selected), y_train_val_combined)
+    #     # Train a new SVM model on PCA components for visualization
+    #     svm_pca = SVC(
+    #         probability=True,
+    #         class_weight=class_weights,
+    #         random_state=RANDOM_SEED,
+    #         **best_params
+    #     )
+    #     svm_pca.fit(pca.fit_transform(X_train_val_selected), y_train_val_combined)
         
-        # Create meshgrid for decision boundary
-        h = 0.02  # step size in the mesh
-        x_min, x_max = X_test_pca[:, 0].min() - 1, X_test_pca[:, 0].max() + 1
-        y_min, y_max = X_test_pca[:, 1].min() - 1, X_test_pca[:, 1].max() + 1
-        xx, yy = np.meshgrid(np.arange(x_min, x_max, h), np.arange(y_min, y_max, h))
+    #     # Create meshgrid for decision boundary
+    #     h = 0.02  # step size in the mesh
+    #     x_min, x_max = X_test_pca[:, 0].min() - 1, X_test_pca[:, 0].max() + 1
+    #     y_min, y_max = X_test_pca[:, 1].min() - 1, X_test_pca[:, 1].max() + 1
+    #     xx, yy = np.meshgrid(np.arange(x_min, x_max, h), np.arange(y_min, y_max, h))
         
-        # Plot decision boundary
-        plt.figure(figsize=(10, 8))
-        Z = svm_pca.predict(np.c_[xx.ravel(), yy.ravel()])
-        Z = Z.reshape(xx.shape)
-        plt.contourf(xx, yy, Z, alpha=0.8, cmap=plt.cm.RdBu)
+    #     # Plot decision boundary
+    #     plt.figure(figsize=(10, 8))
+    #     Z = svm_pca.predict(np.c_[xx.ravel(), yy.ravel()])
+    #     Z = Z.reshape(xx.shape)
+    #     plt.contourf(xx, yy, Z, alpha=0.8, cmap=plt.cm.RdBu)
         
-        # Plot test samples
-        scatter = plt.scatter(X_test_pca[:, 0], X_test_pca[:, 1], c=y_test, 
-                            edgecolors='k', cmap=plt.cm.RdBu)
-        plt.legend(*scatter.legend_elements(),
-                title="Classes", loc="upper right")
-        plt.xlabel(f"PCA Component 1 ({explained_var[0]:.2%} variance)")
-        plt.ylabel(f"PCA Component 2 ({explained_var[1]:.2%} variance)")
-        plt.title('Decision Boundary (PCA Projection)')
-        plt.tight_layout()
-        plt.savefig(os.path.join(output_dir, 'decision_boundary.png'))
-        print(f"Decision boundary visualization saved to {os.path.join(output_dir, 'decision_boundary.png')}")
-    else:
-        print("Skipping decision boundary visualization (feature space already 2D or less)")
+    #     # Plot test samples
+    #     scatter = plt.scatter(X_test_pca[:, 0], X_test_pca[:, 1], c=y_test, 
+    #                         edgecolors='k', cmap=plt.cm.RdBu)
+    #     plt.legend(*scatter.legend_elements(),
+    #             title="Classes", loc="upper right")
+    #     plt.xlabel(f"PCA Component 1 ({explained_var[0]:.2%} variance)")
+    #     plt.ylabel(f"PCA Component 2 ({explained_var[1]:.2%} variance)")
+    #     plt.title('Decision Boundary (PCA Projection)')
+    #     plt.tight_layout()
+    #     plt.savefig(os.path.join(output_dir, 'decision_boundary.png'))
+    #     print(f"Decision boundary visualization saved to {os.path.join(output_dir, 'decision_boundary.png')}")
+    # else:
+    #     print("Skipping decision boundary visualization (feature space already 2D or less)")
     
     # 12. CONCLUSION AND SUMMARY
     print("\n12. MODEL TRAINING SUMMARY")
@@ -648,7 +761,7 @@ def train_svm_classifier(input_file, output_dir, target_column='FIRE_SIZE_HA', t
 
 if __name__ == "__main__":
     # Path to your processed wildfire-weather dataset
-    input_file = "data/wildfire_weather_interpolated_merged.csv"
+    input_file = "data/wildfire_weather_interpolated_merged_cleaned.csv"
     
     # If the specific file doesn't exist, try to find an alternative in the analysis output
     if not os.path.exists(input_file):
@@ -667,7 +780,7 @@ if __name__ == "__main__":
                 break
     
     # Output directory for model artifacts
-    output_dir = "./models/svm/classification_1"
+    output_dir = "./models/svm/classification_6"
     
     # Define classification threshold in hectares (same as XGBoost for comparison)
     threshold = 0.01

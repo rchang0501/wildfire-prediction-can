@@ -1,0 +1,19 @@
+TUNED SVM MODEL METRICS
+==============================
+
+Best Parameters:
+  C: 0.1
+  gamma: 0.001
+  kernel: sigmoid
+
+Training Accuracy: 0.5859
+Validation Accuracy: 0.5848
+
+Training F1 Score: 0.7389
+Validation F1 Score: 0.7380
+
+Validation Precision: 0.5848
+Validation Recall: 1.0000
+
+Training AUC: 0.7142
+Validation AUC: 0.7655
