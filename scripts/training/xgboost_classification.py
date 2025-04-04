@@ -216,6 +216,33 @@ def train_xgboost_classifier(input_file, output_dir, target_column='FIRE_SIZE_HA
     print(f"Baseline model validation F1: {baseline_val_f1:.4f}")
     print(f"Baseline model training AUC: {baseline_train_auc:.4f}")
     print(f"Baseline model validation AUC: {baseline_val_auc:.4f}")
+
+    # Write baseline metrics to file
+    baseline_metrics = {
+        'baseline_train_accuracy': baseline_train_accuracy,
+        'baseline_val_accuracy': baseline_val_accuracy,
+        'baseline_train_f1': baseline_train_f1,
+        'baseline_val_f1': baseline_val_f1,
+        'baseline_train_auc': baseline_train_auc,
+        'baseline_val_auc': baseline_val_auc
+    }
+
+    # Create metrics dataframe and save to CSV
+    baseline_metrics_df = pd.DataFrame([baseline_metrics])
+    baseline_metrics_df.to_csv(os.path.join(output_dir, 'baseline_model_metrics.csv'), index=False)
+    print(f"Baseline metrics saved to {os.path.join(output_dir, 'baseline_model_metrics.csv')}")
+
+    # Also write a more readable text version
+    with open(os.path.join(output_dir, 'baseline_model_metrics.txt'), 'w') as f:
+        f.write("BASELINE XGBOOST MODEL METRICS\n")
+        f.write("="*30 + "\n\n")
+        f.write(f"Training Accuracy: {baseline_train_accuracy:.4f}\n")
+        f.write(f"Validation Accuracy: {baseline_val_accuracy:.4f}\n\n")
+        f.write(f"Training F1 Score: {baseline_train_f1:.4f}\n")
+        f.write(f"Validation F1 Score: {baseline_val_f1:.4f}\n\n")
+        f.write(f"Training AUC: {baseline_train_auc:.4f}\n")
+        f.write(f"Validation AUC: {baseline_val_auc:.4f}\n")
+    print(f"Baseline metrics text summary saved to {os.path.join(output_dir, 'baseline_model_metrics.txt')}")
     
     # 5. FEATURE IMPORTANCE AND FEATURE SELECTION
     print("\n5. FEATURE IMPORTANCE ANALYSIS")
@@ -579,7 +606,7 @@ def train_xgboost_classifier(input_file, output_dir, target_column='FIRE_SIZE_HA
 
 if __name__ == "__main__":
     # Path to your processed wildfire-weather dataset
-    input_file = "./data/wildfire_weather_interpolated_merged.csv"
+    input_file = "./data/wildfire_weather_interpolated_merged_cleaned.csv"
     
     # If the specific file doesn't exist, try to find an alternative in the analysis output
     if not os.path.exists(input_file):
@@ -598,7 +625,7 @@ if __name__ == "__main__":
                 break
     
     # Output directory for model artifacts
-    output_dir = "./models/xgboost/classification_5"
+    output_dir = "./models/xgboost/classification_6"
     
     # Define classification threshold in hectares
     # 1.0 hectare = 2.47 acres, which is a common threshold for "significant" wildfires

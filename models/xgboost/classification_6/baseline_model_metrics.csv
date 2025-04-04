@@ -1,0 +1,2 @@
+baseline_train_accuracy,baseline_val_accuracy,baseline_train_f1,baseline_val_f1,baseline_train_auc,baseline_val_auc
+0.9988465974625144,0.7231833910034602,0.9990167158308751,0.7633136094674556,0.9999945167021254,0.8131163708086785
