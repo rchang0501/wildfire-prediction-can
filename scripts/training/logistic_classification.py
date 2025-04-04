@@ -268,6 +268,39 @@ def train_logistic_classifier(input_file, output_dir, target_column='FIRE_SIZE_H
     print(f"Baseline model validation F1: {baseline_val_f1:.4f}")
     print(f"Baseline model training AUC: {baseline_train_auc:.4f}")
     print(f"Baseline model validation AUC: {baseline_val_auc:.4f}")
+
+    # Write baseline metrics to file
+    baseline_metrics = {
+        'baseline_train_accuracy': baseline_train_accuracy,
+        'baseline_val_accuracy': baseline_val_accuracy,
+        'baseline_train_f1': baseline_train_f1,
+        'baseline_val_f1': baseline_val_f1,
+        'baseline_train_auc': baseline_train_auc,
+        'baseline_val_auc': baseline_val_auc
+    }
+
+    # Create metrics dataframe and save to CSV
+    baseline_metrics_df = pd.DataFrame([baseline_metrics])
+    baseline_metrics_df.to_csv(os.path.join(output_dir, 'baseline_model_metrics.csv'), index=False)
+    print(f"Baseline metrics saved to {os.path.join(output_dir, 'baseline_model_metrics.csv')}")
+
+    # Also write a more readable text version
+    with open(os.path.join(output_dir, 'baseline_model_metrics.txt'), 'w') as f:
+        f.write("BASELINE LOGISTIC REGRESSION MODEL METRICS\n")
+        f.write("="*45 + "\n\n")
+        f.write("Default Parameters:\n")
+        f.write(f"  penalty: l2\n")
+        f.write(f"  C: 1.0\n")
+        f.write(f"  solver: liblinear\n")
+        f.write(f"  class_weight: {class_weights}\n")
+        f.write(f"  max_iter: 1000\n\n")
+        f.write(f"Training Accuracy: {baseline_train_accuracy:.4f}\n")
+        f.write(f"Validation Accuracy: {baseline_val_accuracy:.4f}\n\n")
+        f.write(f"Training F1 Score: {baseline_train_f1:.4f}\n")
+        f.write(f"Validation F1 Score: {baseline_val_f1:.4f}\n\n")
+        f.write(f"Training AUC: {baseline_train_auc:.4f}\n")
+        f.write(f"Validation AUC: {baseline_val_auc:.4f}\n")
+    print(f"Baseline metrics text summary saved to {os.path.join(output_dir, 'baseline_model_metrics.txt')}")
     
     # Look at coefficient magnitude for feature importance
     coefficients = np.abs(baseline_model.coef_[0])
@@ -283,6 +316,7 @@ def train_logistic_classifier(input_file, output_dir, target_column='FIRE_SIZE_H
     plt.title('Top 20 Features by Coefficient Magnitude (Baseline Model)')
     plt.tight_layout()
     plt.savefig(os.path.join(output_dir, 'baseline_coefficients.png'))
+
     
     # 6. HYPERPARAMETER TUNING
     print("\n6. HYPERPARAMETER TUNING")
@@ -328,6 +362,65 @@ def train_logistic_classifier(input_file, output_dir, target_column='FIRE_SIZE_H
     print("Best parameters found:")
     for param, value in best_params.items():
         print(f"  {param}: {value}")
+
+    best_model = grid_search.best_estimator_
+    tuned_train_pred = best_model.predict(X_train_scaled)
+    tuned_val_pred = best_model.predict(X_val_scaled)
+    tuned_train_pred_proba = best_model.predict_proba(X_train_scaled)[:, 1]
+    tuned_val_pred_proba = best_model.predict_proba(X_val_scaled)[:, 1]
+
+    # Calculate metrics for tuned model
+    tuned_train_accuracy = accuracy_score(y_train, tuned_train_pred)
+    tuned_val_accuracy = accuracy_score(y_val, tuned_val_pred)
+    tuned_train_f1 = f1_score(y_train, tuned_train_pred)
+    tuned_val_f1 = f1_score(y_val, tuned_val_pred)
+    tuned_train_auc = roc_auc_score(y_train, tuned_train_pred_proba)
+    tuned_val_auc = roc_auc_score(y_val, tuned_val_pred_proba)
+    tuned_val_precision = precision_score(y_val, tuned_val_pred)
+    tuned_val_recall = recall_score(y_val, tuned_val_pred)
+
+    # Print metrics
+    print(f"\nTuned model metrics:")
+    print(f"Training Accuracy: {tuned_train_accuracy:.4f}  |  Validation Accuracy: {tuned_val_accuracy:.4f}")
+    print(f"Training F1 Score: {tuned_train_f1:.4f}  |  Validation F1 Score: {tuned_val_f1:.4f}")
+    print(f"Training AUC: {tuned_train_auc:.4f}  |  Validation AUC: {tuned_val_auc:.4f}")
+    print(f"Validation Precision: {tuned_val_precision:.4f}")
+    print(f"Validation Recall: {tuned_val_recall:.4f}")
+
+    # Write tuned model metrics to file
+    tuned_metrics = {
+        'tuned_train_accuracy': tuned_train_accuracy,
+        'tuned_val_accuracy': tuned_val_accuracy,
+        'tuned_train_f1': tuned_train_f1,
+        'tuned_val_f1': tuned_val_f1,
+        'tuned_train_auc': tuned_train_auc,
+        'tuned_val_auc': tuned_val_auc,
+        'tuned_val_precision': tuned_val_precision,
+        'tuned_val_recall': tuned_val_recall
+    }
+
+    # Create metrics dataframe and save to CSV
+    tuned_metrics_df = pd.DataFrame([tuned_metrics])
+    tuned_metrics_df.to_csv(os.path.join(output_dir, 'tuned_model_metrics.csv'), index=False)
+    print(f"Tuned model metrics saved to {os.path.join(output_dir, 'tuned_model_metrics.csv')}")
+
+    # Also write a more readable text version
+    with open(os.path.join(output_dir, 'tuned_model_metrics.txt'), 'w') as f:
+        f.write("TUNED LOGISTIC REGRESSION MODEL METRICS\n")
+        f.write("="*45 + "\n\n")
+        f.write(f"Best Parameters:\n")
+        for param, value in best_params.items():
+            f.write(f"  {param}: {value}\n")
+        f.write("\n")
+        f.write(f"Training Accuracy: {tuned_train_accuracy:.4f}\n")
+        f.write(f"Validation Accuracy: {tuned_val_accuracy:.4f}\n\n")
+        f.write(f"Training F1 Score: {tuned_train_f1:.4f}\n")
+        f.write(f"Validation F1 Score: {tuned_val_f1:.4f}\n\n")
+        f.write(f"Training AUC: {tuned_train_auc:.4f}\n")
+        f.write(f"Validation AUC: {tuned_val_auc:.4f}\n\n")
+        f.write(f"Validation Precision: {tuned_val_precision:.4f}\n")
+        f.write(f"Validation Recall: {tuned_val_recall:.4f}\n")
+    print(f"Tuned model metrics text summary saved to {os.path.join(output_dir, 'tuned_model_metrics.txt')}")
     
     # 7. TRAIN FINAL MODEL
     print("\n7. TRAINING FINAL MODEL WITH TUNED HYPERPARAMETERS")
@@ -675,7 +768,7 @@ if __name__ == "__main__":
                 break
     
     # Output directory for model artifacts
-    output_dir = "./models/logistic/classification_1"
+    output_dir = "./models/logistic/classification_2"
     
     # Define classification threshold in hectares (same as other models for comparison)
     threshold = 0.01
