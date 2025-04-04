@@ -1,0 +1,11 @@
+BASELINE XGBOOST MODEL METRICS
+==============================
+
+Training Accuracy: 0.9988
+Validation Accuracy: 0.7232
+
+Training F1 Score: 0.9990
+Validation F1 Score: 0.7633
+
+Training AUC: 1.0000
+Validation AUC: 0.8131
