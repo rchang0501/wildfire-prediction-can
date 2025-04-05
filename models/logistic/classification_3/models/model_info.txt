@@ -1,0 +1,49 @@
+LOGISTIC REGRESSION WILDFIRE CLASSIFICATION MODEL
+Trained on: 2025-04-05 13:26:11
+
+CLASSIFICATION THRESHOLD: 0.01 hectares
+
+Class 0: Fire size < 0.01 hectares
+Class 1: Fire size >= 0.01 hectares
+
+BEST HYPERPARAMETERS:
+C: 100
+class_weight: None
+penalty: l1
+solver: liblinear
+
+SELECTED FEATURES:
+HUMIDITY
+Wetness
+Pressurembar
+cum_pcpn_amt
+Rainmm
+min_air_temp_snc_last_reset
+CURRENT_AIR_TEMPERATURE1
+Longitude
+SnowWaterEquivalent
+TempC
+relative_humidity
+air_temp
+avg_rel_hum_pst1hr
+air_temperature_yesterday_high
+snwfl_amt_pst1hr
+DewPtC
+snw_dpth
+TEMP_MEAN
+SolarRadiation
+Year
+Month
+DayOfYear
+
+TOP 10 COEFFICIENTS:
+1. snwfl_amt_pst1hr: -5.1367
+2. SnowWaterEquivalent: 4.7813
+3. snw_dpth: -1.6134
+4. SolarRadiation: 1.1389
+5. Year: 1.0193
+6. TEMP_MEAN: 0.7197
+7. DewPtC: -0.6899
+8. air_temp: 0.6212
+9. min_air_temp_snc_last_reset: 0.4323
+10. DayOfYear: 0.4152

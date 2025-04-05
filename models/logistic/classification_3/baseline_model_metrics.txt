@@ -1,0 +1,18 @@
+BASELINE LOGISTIC REGRESSION MODEL METRICS
+=============================================
+
+Default Parameters:
+  penalty: l2
+  C: 1.0
+  solver: liblinear
+  class_weight: None
+  max_iter: 1000
+
+Training Accuracy: 0.6851
+Validation Accuracy: 0.6920
+
+Training F1 Score: 0.7321
+Validation F1 Score: 0.7390
+
+Training AUC: 0.7704
+Validation AUC: 0.7818

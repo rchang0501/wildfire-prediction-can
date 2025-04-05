@@ -749,7 +749,7 @@ def train_logistic_classifier(input_file, output_dir, target_column='FIRE_SIZE_H
 
 if __name__ == "__main__":
     # Path to your processed wildfire-weather dataset
-    input_file = "./data/wildfire_weather_interpolated_merged_cleaned.csv"
+    input_file = "./data/lr_top_20_wildfire_weather_interpolated_merged_cleaned.csv"
     
     # If the specific file doesn't exist, try to find an alternative in the analysis output
     if not os.path.exists(input_file):
@@ -768,7 +768,7 @@ if __name__ == "__main__":
                 break
     
     # Output directory for model artifacts
-    output_dir = "./models/logistic/classification_2"
+    output_dir = "./models/logistic/classification_3"
     
     # Define classification threshold in hectares (same as other models for comparison)
     threshold = 0.01

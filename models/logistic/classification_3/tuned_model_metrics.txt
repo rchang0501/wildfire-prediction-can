@@ -1,0 +1,20 @@
+TUNED LOGISTIC REGRESSION MODEL METRICS
+=============================================
+
+Best Parameters:
+  C: 100
+  class_weight: None
+  penalty: l1
+  solver: liblinear
+
+Training Accuracy: 0.6967
+Validation Accuracy: 0.6886
+
+Training F1 Score: 0.7409
+Validation F1 Score: 0.7353
+
+Training AUC: 0.7792
+Validation AUC: 0.7763
+
+Validation Precision: 0.7310
+Validation Recall: 0.7396
